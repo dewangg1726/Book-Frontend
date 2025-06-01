@@ -18,10 +18,10 @@ const Navbar = ({ active }) => {
         <a href="/" className="text-2xl md:text-3xl font-bold hover:opacity-80 transition-opacity">
           <span className="inline-block">
             <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text  text-transparent">β</span>
-            <span className="text-white">ETA</span>
+            <span className="text-white">ill</span>
           </span>
-          <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Q</span>
-          <span className="text-white">UE</span>
+          <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">E</span>
+          <span className="text-white">asy</span>
         </a>
 
         {isAuthenticated && (

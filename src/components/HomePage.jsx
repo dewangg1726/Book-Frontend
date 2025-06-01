@@ -1,26 +1,30 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import axios from 'axios';
 import { toast, Toaster } from 'sonner';
 import api from '../api/Axios';
+import Pagination from '../utils/Pagination';
 export default function HomePage() {
   const nav = useNavigate();
   const [books, setBooks] = useState([]);
+  const [totalBooks,setTotalBooks] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
+  const [currentPage,setCurrentPage] = useState(1);
+  const [booksPerPage] = useState(9);  
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       nav('/login');
       return;
     }
-
+   const offset = (currentPage-1)*booksPerPage;
     (async () => {
       try {
-        const { data } = await api.get('/books');
-        setBooks(data);
+        const { data } = await api.get(`/books/fetch?limit=${booksPerPage}&offset=${offset}`);
+        setBooks(data.books);
+        setTotalBooks(data.total);
       } catch (err) {
         if (err.response?.status === 401) nav('/login');
         else setError('Failed to fetch books');
@@ -28,7 +32,9 @@ export default function HomePage() {
         setLoading(false);
       }
     })();
-  }, [nav]);
+  }, [nav,currentPage,booksPerPage]);
+
+
 
   if (loading) return <div className="flex min-h-screen items-center justify-center">Loading…</div>;
   if (error)   return <div className="flex min-h-screen items-center justify-center text-rose-500">{error}</div>;
@@ -40,7 +46,7 @@ export default function HomePage() {
         <header className="mb-8 flex items-center justify-between bg-white p-6 rounded-2xl shadow-sm border border-sky-50">
           <div>
             <h1 className="text-3xl font-bold text-sky-900 font-[Inter]">My Library</h1>
-            <p className="text-sm text-sky-500 mt-1">{books.length} books collected</p>
+            <p className="text-sm text-sky-500 mt-1">{totalBooks} books collected</p>
           </div>
           <button
             className="rounded-xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-700 transition-all 
@@ -65,7 +71,8 @@ export default function HomePage() {
             </div>
           </div>
         ) : (
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <>
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
             {books.map((b) => (
               <li 
                 key={b._id} 
@@ -127,8 +134,13 @@ export default function HomePage() {
                 </div>
               </li>
             ))}
+            
+
           </ul>
+          </>
         )}
+                  <Pagination totalBooks ={totalBooks} booksPerPage = {booksPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} className="table-footer-group" />
+
       </div>
     </>
   );

@@ -18,9 +18,7 @@ export const LoginPage = () => {
     setLoading(true);
     setError('');
     try {
-      console.log("or did it reach here",api);
       const { data } = await api.post('/auth/login', form);
-      console.log("what happened?")
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       nav('/books');
